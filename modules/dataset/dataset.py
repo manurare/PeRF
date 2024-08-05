@@ -70,7 +70,7 @@ class Dataset:
         refiner = PanoGeoRefiner()
         return refiner.refine(distance_map, normal_map)
 
-    def get_joint_distance_normal(self, org_distance=None):
+    def get_joint_distance_normal(self, org_distance=None, keepGT=False):
         assert self.image is not None
         assert self.ref_distance_path is not None
         assert self.ref_normal_path is not None
@@ -91,12 +91,12 @@ class Dataset:
             if org_distance is None:
                 ref_distance, ref_normal = joint_predictor(self.image,
                                                            torch.ones([self.height, self.width, 1]),
-                                                           torch.ones([self.height, self.width]))
+                                                           torch.ones([self.height, self.width]), keepGT=keepGT)
             else:
                 ref_distance, ref_normal = joint_predictor(self.image,
                                                            ref_distance=org_distance,
                                                            mask=torch.zeros([self.height, self.width]),
-                                                           reg_loss_weight=0.)
+                                                           reg_loss_weight=0., keepGT=keepGT)
 
 
         return ref_distance, ref_normal
@@ -162,7 +162,7 @@ class WildDataset(Dataset):
 
             self.normalization()
         else:
-            _, self.ref_normal = self.get_joint_distance_normal()
+            _, self.ref_normal = self.get_joint_distance_normal(keepGT=True)
             self.ref_distance = self.get_ref_distance()
 
         self.save_ref_geometry()

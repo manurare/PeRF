@@ -116,6 +116,7 @@ class CoreRunner:
             pano_distances = (render_result['distance'].min() / render_result['distance']).squeeze()[..., None]
             write_image(pjoin(self.exp_dir, '1.png'), pano_rgb * 255.)
             write_image(pjoin(self.exp_dir, '1_distance.png'), colorize_single_channel_image(pano_distances))
+            np.save(pjoin(self.exp_dir, '1_distance.npy'), pano_distances.cpu().numpy().squeeze())
 
             self.phase += 1
             self.save_checkpoint()

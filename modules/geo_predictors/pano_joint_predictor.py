@@ -99,7 +99,7 @@ class PanoJointPredictor(GeoPredictor):
         return normals
 
     def __call__(self, img, ref_distance, mask, gen_res=384,
-                 reg_loss_weight=1e-1, normal_loss_weight=1e-2, normal_tv_loss_weight=1e-2):
+                 reg_loss_weight=1e-1, normal_loss_weight=1e-2, normal_tv_loss_weight=1e-2, keepGT=False):
         '''
         Do not support batch operation - can only inpaint one image at a time.
         :param img: [H, W, 3]
@@ -301,6 +301,8 @@ class PanoJointPredictor(GeoPredictor):
         new_distances, new_grads = sp_dis_field(pano_dirs.reshape(-1, 3), requires_grad=True)
         new_distances = new_distances.detach().reshape(height, width, 1)
         new_normals = self.grads_to_normal(new_grads.detach().reshape(height, width, 3))
+
+        new_distances = new_distances if not keepGT else ref_distance
 
         return new_distances, new_normals
 

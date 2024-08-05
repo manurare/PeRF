@@ -147,7 +147,7 @@ class NeRFOCCRenderer(nn.Module):
             rays_d,
             sigma_fn=sigma_fn,
             near_plane=0.,
-            far_plane=1.5,
+            far_plane=10.0,
             render_step_size=5e-4,
             stratified=nerf.training,
             cone_angle=0.,
