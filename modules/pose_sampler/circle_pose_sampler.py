@@ -135,7 +135,7 @@ class LemniscatePoseSampler(PoseSampler):
         x = a * np.cos(theta) / (np.sin(theta)**2 + 1)
         y = a * np.cos(theta) * np.sin(theta) / (np.sin(theta)**2 + 1)
         z = a * 0.2 * np.cos(4*theta)
-        Cs = np.stack((x, y, z)).T
+        Cs = np.stack((x, y, z)).T / 20.0
 
         self.anchor_pts = torch.from_numpy(Cs[::5])
         self.n_anchors = self.anchor_pts.shape[0]
