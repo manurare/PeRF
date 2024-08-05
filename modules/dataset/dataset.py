@@ -78,7 +78,11 @@ class Dataset:
 
         if os.path.exists(self.ref_distance_path) and\
            os.path.exists(self.ref_normal_path):
-            ref_distance = np.load(self.ref_distance_path)
+            try:
+                ref_distance = np.load(self.ref_distance_path)
+            except:
+                ref_distance = read_dpt(self.ref_distance_path)
+
             ref_distance = torch.from_numpy(ref_distance.astype(np.float32)).cuda()
             ref_normal = np.load(self.ref_normal_path)
             ref_normal = torch.from_numpy(ref_normal.astype(np.float32)).cuda()

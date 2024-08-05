@@ -138,7 +138,7 @@ class LemniscatePoseSampler(PoseSampler):
         Cs = np.stack((x, y, z)).T
 
         self.anchor_pts = torch.from_numpy(Cs[::5])
-        self.n_anchors = Cs.shape[0]
+        self.n_anchors = self.anchor_pts.shape[0]
 
     @torch.no_grad()
     def sample_pose(self, idx):

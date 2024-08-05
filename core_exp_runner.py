@@ -220,7 +220,7 @@ class CoreRunner:
         self.scene.load_state_dict(checkpoint['scene'])
         self.phase = checkpoint['phase']
 
-    def render_dense(self, n_poses=180, cam_type='pano'):
+    def render_dense(self, n_poses=180, cam_type='persp'):
         dense_pose_sampler = DenseLemniscatePoseSampler(self.pose_sampler, n_dense_poses=n_poses)
         out_dir = pjoin(self.exp_dir, 'dense_images_new_' + cam_type)
         os.makedirs(out_dir, exist_ok=True)

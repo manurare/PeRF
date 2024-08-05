@@ -116,7 +116,7 @@ class DenseTravelPoseSampler(PoseSampler):
         return self.sample_poses[idx]
     
 class DenseLemniscatePoseSampler(PoseSampler):
-    def __init__(self, distance_map, traverse_ratios, n_anchors_per_ratio, test_z_min_max=(0., 0.), **kwargs):
+    def __init__(self, sparse_pose_sampler: PoseSampler, n_dense_poses, dir_bias_ratio=-1):
         super().__init__()
         # Parameters
         a = 0.5  # Scale of the lemniscate
@@ -136,19 +136,21 @@ class DenseLemniscatePoseSampler(PoseSampler):
         Cs = np.stack((x, y, z)).T
 
         dx_dtheta = -a*(np.sin(theta) * (np.sin(theta) ** 2 + 2*np.cos(theta)**2 + 1)) / (np.sin(theta)**2 + 1)**2
-        dz_dtheta = -a*(np.sin(theta)**4 + np.sin(theta)**2 + (np.sin(theta)**2-1)*np.cos(theta)**2) / (np.sin(theta)**2 + 1)**2
+        dy_dtheta = -a*(np.sin(theta)**4 + np.sin(theta)**2 + (np.sin(theta)**2-1)*np.cos(theta)**2) / (np.sin(theta)**2 + 1)**2
 
-        lookat = np.stack((dx_dtheta, dz_dtheta, np.zeros_like(x))).T
+        lookat = np.stack((dx_dtheta, dy_dtheta, np.zeros_like(x))).T
         lookat = lookat / np.linalg.norm(lookat, axis=1, keepdims=True)
 
-        Rs = look_at(lookat, [0, 0, 1])
+        lookat = torch.from_numpy(lookat).to("cuda").type(torch.float32)
+
+        Rs = look_at(lookat).cpu()
 
         self.anchor_pts = torch.from_numpy(Cs)
-        self.n_anchors = Cs.shape[0]
+        self.n_poses = self.anchor_pts.shape[0]
 
-        self.sample_poses = np.eye(4)[None, ...].repeat(self.n_anchors, axis=0)
+        self.sample_poses = torch.eye(4)[None, ...].expand(self.n_poses, -1, -1).clone().contiguous()
         self.sample_poses[:, :3, :3] = Rs
-        self.sample_poses[:, :3, 3] = Cs
+        self.sample_poses[:, :3, 3] = self.anchor_pts
     
     @torch.no_grad()
     def sample_pose(self, idx):
