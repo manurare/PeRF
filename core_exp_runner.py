@@ -19,7 +19,7 @@ from modules.inpainters import PanoPersFusionInpainter
 from modules.geo_predictors import PanoJointPredictor
 from modules.dataset.dataset import WildDataset
 from modules.dataset.sup_info import SupInfoPool
-from modules.pose_sampler import CirclePoseSampler
+from modules.pose_sampler import CirclePoseSampler, LemniscatePoseSampler
 from modules.pose_sampler import DenseTravelPoseSampler
 
 from modules.scene.nerf import NeRFScene
@@ -71,7 +71,7 @@ class CoreRunner:
             write_image(pjoin(self.exp_dir, 'normal_vis.png'),
                         (self.dataset.ref_normal * .5 + .5) * 255.)
 
-        self.pose_sampler = CirclePoseSampler(self.dataset.ref_distance,
+        self.pose_sampler = LemniscatePoseSampler(self.dataset.ref_distance,
                                               **conf.pose_sampler)
 
         self.sup_pool = SupInfoPool()

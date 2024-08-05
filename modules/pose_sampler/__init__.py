@@ -1,2 +1,2 @@
-from .circle_pose_sampler import CirclePoseSampler
+from .circle_pose_sampler import CirclePoseSampler, LemniscatePoseSampler
 from .dense_travel_pose_sampler import DenseTravelPoseSampler

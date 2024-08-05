@@ -1,15 +1,16 @@
 device:
-  base_exp_dir: /home/featurize/PeRF/exp
+  base_exp_dir: hotel_0
 exp_name: nerf_experiment
-mode: render_dense
-is_continue: true
+mode: train
+is_continue: false
 dataset_class_name: WildDataset
 dataset:
   image_resize:
   - 2048
   - 1024
-  image_path: /home/featurize/PeRF/example_data/kitchen/image.png
-pose_sampler_name: CirclePoseSampler
+  image_path: example_data/replica/hotel_0_lemniscate_1k_0/renders/input_rgb.jpg
+  depth_path: example_data/replica/hotel_0_lemniscate_1k_0/renders/input_depth.dpt
+pose_sampler_name: LemniscatePoseSampler
 pose_sampler:
   traverse_ratios:
   - 0.2
