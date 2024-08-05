@@ -135,27 +135,15 @@ class LemniscatePoseSampler(PoseSampler):
         x = a * np.cos(theta) / (np.sin(theta)**2 + 1)
         y = a * np.cos(theta) * np.sin(theta) / (np.sin(theta)**2 + 1)
         z = a * 0.2 * np.cos(4*theta)
-        Cs = np.stack((x, y, z)).T # -x because right in mesh is the oposite as in replica
+        Cs = np.stack((x, y, z)).T
 
-        dx_dtheta = -a*(np.sin(theta) * (np.sin(theta) ** 2 + 2*np.cos(theta)**2 + 1)) / (np.sin(theta)**2 + 1)**2
-        dz_dtheta = -a*(np.sin(theta)**4 + np.sin(theta)**2 + (np.sin(theta)**2-1)*np.cos(theta)**2) / (np.sin(theta)**2 + 1)**2
-
-        lookat = np.stack((dx_dtheta, dz_dtheta, np.zeros_like(x))).T
-        lookat = lookat / np.linalg.norm(lookat, axis=1, keepdims=True)
-
-        UP = np.array([0, -1, 0])[None, :]
-        right = np.cross(lookat, UP)
-        right = right / np.linalg.norm(right, axis=1, keepdims=True)
-
-        up = np.array([0, 1, 0])[None, ...].repeat(lookat.shape[0], axis=0)
-
-        Rs = np.concatenate((right, up, lookat), axis=1).reshape(-1, 3, 3).transpose(0, 2, 1)  # cam2world
-        self.anchor_pts = Cs
+        self.anchor_pts = torch.from_numpy(Cs[::5])
+        self.n_anchors = Cs.shape[0]
 
     @torch.no_grad()
     def sample_pose(self, idx):
         pose = torch.eye(4)
         pose[:3, 3] = self.anchor_pts[idx]
         return pose
-
+    
 

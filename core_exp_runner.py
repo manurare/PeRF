@@ -20,7 +20,7 @@ from modules.geo_predictors import PanoJointPredictor
 from modules.dataset.dataset import WildDataset
 from modules.dataset.sup_info import SupInfoPool
 from modules.pose_sampler import CirclePoseSampler, LemniscatePoseSampler
-from modules.pose_sampler import DenseTravelPoseSampler
+from modules.pose_sampler import DenseTravelPoseSampler, DenseLemniscatePoseSampler
 
 from modules.scene.nerf import NeRFScene
 
@@ -221,7 +221,7 @@ class CoreRunner:
         self.phase = checkpoint['phase']
 
     def render_dense(self, n_poses=180, cam_type='pano'):
-        dense_pose_sampler = DenseTravelPoseSampler(self.pose_sampler, n_dense_poses=n_poses)
+        dense_pose_sampler = DenseLemniscatePoseSampler(self.pose_sampler, n_dense_poses=n_poses)
         out_dir = pjoin(self.exp_dir, 'dense_images_new_' + cam_type)
         os.makedirs(out_dir, exist_ok=True)
 
@@ -232,7 +232,7 @@ class CoreRunner:
                 pose[:3, :3] = torch.eye(3)
                 rays = gen_pano_rays(pose, 512, 1024)
             else:
-                rays = gen_pers_rays(pose, fov=np.deg2rad(75.), res=512)
+                rays = gen_pers_rays(pose, fov=np.deg2rad(79.70955707897667), res=512)
 
             with torch.no_grad():
                 render_result = self.scene.render(rays, query_keys=['rgb', 'distance'])

@@ -114,3 +114,42 @@ class DenseTravelPoseSampler(PoseSampler):
     @torch.no_grad()
     def sample_pose(self, idx):
         return self.sample_poses[idx]
+    
+class DenseLemniscatePoseSampler(PoseSampler):
+    def __init__(self, distance_map, traverse_ratios, n_anchors_per_ratio, test_z_min_max=(0., 0.), **kwargs):
+        super().__init__()
+        # Parameters
+        a = 0.5  # Scale of the lemniscate
+
+        # Create theta values
+        theta1 = np.linspace(0.5*np.pi, 0.75*np.pi, 25)
+        theta2 = np.linspace(0.75*np.pi, 1.25*np.pi, 80)
+        theta3 = np.linspace(1.25*np.pi, 1.75*np.pi, 45)
+        theta4 = np.linspace(1.75*np.pi, 2.25*np.pi, 80)
+        theta5 = np.linspace(2.25*np.pi, 2.5*np.pi, 25)
+        theta = np.concatenate((theta1, theta2, theta3, theta4, theta5))
+
+        # Convert to Cartesian coordinates
+        x = a * np.cos(theta) / (np.sin(theta)**2 + 1)
+        y = a * np.cos(theta) * np.sin(theta) / (np.sin(theta)**2 + 1)
+        z = a * 0.2 * np.cos(4*theta)
+        Cs = np.stack((x, y, z)).T
+
+        dx_dtheta = -a*(np.sin(theta) * (np.sin(theta) ** 2 + 2*np.cos(theta)**2 + 1)) / (np.sin(theta)**2 + 1)**2
+        dz_dtheta = -a*(np.sin(theta)**4 + np.sin(theta)**2 + (np.sin(theta)**2-1)*np.cos(theta)**2) / (np.sin(theta)**2 + 1)**2
+
+        lookat = np.stack((dx_dtheta, dz_dtheta, np.zeros_like(x))).T
+        lookat = lookat / np.linalg.norm(lookat, axis=1, keepdims=True)
+
+        Rs = look_at(lookat, [0, 0, 1])
+
+        self.anchor_pts = torch.from_numpy(Cs)
+        self.n_anchors = Cs.shape[0]
+
+        self.sample_poses = np.eye(4)[None, ...].repeat(self.n_anchors, axis=0)
+        self.sample_poses[:, :3, :3] = Rs
+        self.sample_poses[:, :3, 3] = Cs
+    
+    @torch.no_grad()
+    def sample_pose(self, idx):
+        return self.sample_poses[idx]
