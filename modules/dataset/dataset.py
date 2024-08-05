@@ -34,7 +34,10 @@ class Dataset:
 
         ref_distance = None
         if os.path.exists(self.ref_distance_path):
-            ref_distance = np.load(self.ref_distance_path)
+            try:
+                ref_distance = np.load(self.ref_distance_path)
+            except:
+                ref_distance = read_dpt(self.ref_distance_path)
             ref_distance = torch.from_numpy(ref_distance.astype(np.float32)).cuda()
         else:
             distance_predictor = PanoFusionInvPredictor()
@@ -133,7 +136,10 @@ class WildDataset(Dataset):
     def __init__(self, conf):
         super().__init__()
         self.image_path = conf.image_path
-        self.ref_distance_path = '.'.join(self.image_path.split('.')[:-1]) + '_ref_distance.npy'
+        if conf.depth_path is not None:
+            self.ref_distance_path = conf.depth_path
+        else:
+            self.ref_distance_path = '.'.join(self.image_path.split('.')[:-1]) + '_ref_distance.npy'
         self.ref_normal_path = '.'.join(self.image_path.split('.')[:-1]) + '_ref_normal.npy'
         self.ref_geometry_path = '.'.join(self.image_path.split('.')[:-1]) + '_ref_geometry.ply'
 
@@ -147,8 +153,12 @@ class WildDataset(Dataset):
         else:
             self.height, self.width, _ = self.image.shape
 
-        self.ref_distance, self.ref_normal = self.get_joint_distance_normal()
+        if conf.depth_path is None:
+            self.ref_distance, self.ref_normal = self.get_joint_distance_normal()
 
-        self.normalization()
+            self.normalization()
+        else:
+            _, self.ref_normal = self.get_joint_distance_normal()
+            self.ref_distance = self.get_ref_distance()
+
         self.save_ref_geometry()
-
