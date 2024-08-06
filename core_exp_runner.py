@@ -243,6 +243,7 @@ class CoreRunner:
             color_frames.append((colors.clip(0., 1.) * 255.).cpu().numpy().astype(np.uint8))
             write_image(pjoin(out_dir, 'image_{}.png'.format(i)), colors * 255.)
             write_image(pjoin(out_dir, 'distance_{}.png'.format(i)), colorize_single_channel_image(1. / distances))
+            np.save(pjoin(out_dir, 'distance_{}.npy'.format(i)), distances.cpu().numpy()*20)
         
         write_video(pjoin(out_dir, 'video.mp4'), color_frames, fps=30)
 
