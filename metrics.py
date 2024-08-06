@@ -42,7 +42,7 @@ for i in tqdm.tqdm(range(numfiles)):
 
     # Depth
     pred_depth = np.load(pred_depth_files_format.format(i)).squeeze()
-    gt_depth = read_dpt(gt_depth_files_format.format(i)).suqeeze()
+    gt_depth = read_dpt(gt_depth_files_format.format(i)).squeeze()
 
     mask = gt_depth > 0
 
