@@ -203,19 +203,3 @@ def delta_inlier_ratio_map(pred, gt, mask, degree=1):
     delta_map_all[mask > 0] = delta_map
     delta_map_all[mask <= 0] = -1
     return delta_map_all
-
-
-def normalize_depth_maps(pred, gt, mask):
-
-    # Compute median and substract
-    median_gt = np.median(gt[mask])
-    median_pred = np.median(pred[mask])
-    sub_med_pred = pred - median_pred
-
-    #   Get the deviation of the valid pixels
-    dev_gt = np.sum(np.abs(gt[mask] - median_gt)) / np.sum(mask)
-    dev_pred = np.sum(np.abs(pred[mask] - median_pred)) / np.sum(mask)
-
-    pred = sub_med_pred / dev_pred * dev_gt + median_gt
-
-    return gt, pred
