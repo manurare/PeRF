@@ -38,6 +38,7 @@ class Dataset:
                 ref_distance = np.load(self.ref_distance_path) / 20.0
             except:
                 ref_distance = read_dpt(self.ref_distance_path) / 20.0
+            ref_distance[ref_distance <= 0] = np.max(ref_distance)
             ref_distance = torch.from_numpy(ref_distance.astype(np.float32)).cuda()
         else:
             distance_predictor = PanoFusionInvPredictor()
