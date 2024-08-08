@@ -145,7 +145,7 @@ class DenseLemniscatePoseSampler(PoseSampler):
 
         Rs = look_at(lookat).cpu()
 
-        self.anchor_pts = torch.from_numpy(Cs) / 20.0
+        self.anchor_pts = torch.from_numpy(Cs) / 100.0
         self.n_poses = self.anchor_pts.shape[0]
 
         self.sample_poses = torch.eye(4)[None, ...].expand(self.n_poses, -1, -1).clone().contiguous()
