@@ -1,4 +1,6 @@
 from .pose_sampler import PoseSampler
+import os
+from envvars import SCALE
 
 import torch
 import torch.nn as nn
@@ -135,7 +137,7 @@ class LemniscatePoseSampler(PoseSampler):
         x = a * np.cos(theta) / (np.sin(theta)**2 + 1)
         y = a * np.cos(theta) * np.sin(theta) / (np.sin(theta)**2 + 1)
         z = a * 0.2 * np.cos(4*theta)
-        Cs = np.stack((x, y, z)).T / 100.0
+        Cs = np.stack((x, y, z)).T / SCALE
 
         # 7.5 is the ratio between test Poses and training poses in the original paper. 180/24
         indices = np.linspace(0, Cs.shape[0], int(Cs.shape[0] / 7.5), endpoint=False).astype(int)

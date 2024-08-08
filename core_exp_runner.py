@@ -3,6 +3,7 @@ import cv2 as cv
 import numpy as np
 from shutil import copyfile
 from os.path import join as pjoin
+from envvars import SCALE
 
 import trimesh
 import torch
@@ -71,7 +72,7 @@ class CoreRunner:
             write_image(pjoin(self.exp_dir, 'normal_vis.png'),
                         (self.dataset.ref_normal * .5 + .5) * 255.)
 
-        self.pose_sampler = LemniscatePoseSampler(self.dataset.ref_distance,
+        self.pose_sampler = CirclePoseSampler(self.dataset.ref_distance,
                                               **conf.pose_sampler)
 
         self.sup_pool = SupInfoPool()
@@ -243,7 +244,7 @@ class CoreRunner:
             color_frames.append((colors.clip(0., 1.) * 255.).cpu().numpy().astype(np.uint8))
             write_image(pjoin(out_dir, 'image_{}.png'.format(i)), colors * 255.)
             write_image(pjoin(out_dir, 'distance_{}.png'.format(i)), colorize_single_channel_image(1. / distances))
-            np.save(pjoin(out_dir, 'distance_{}.npy'.format(i)), distances.cpu().numpy()*20)
+            np.save(pjoin(out_dir, 'distance_{}.npy'.format(i)), distances.cpu().numpy()*SCALE)
         
         write_video(pjoin(out_dir, 'video.mp4'), color_frames, fps=30)
 

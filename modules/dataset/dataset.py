@@ -1,10 +1,12 @@
 import os.path
+import os
 import numpy as np
 import torch
 import trimesh
 import hashlib
 import cv2 as cv
 
+from envvars import SCALE
 from os.path import join as pjoin
 from utils.utils import read_dpt, read_image, write_image
 from utils.camera_utils import *
@@ -35,9 +37,9 @@ class Dataset:
         ref_distance = None
         if os.path.exists(self.ref_distance_path):
             try:
-                ref_distance = np.load(self.ref_distance_path) / 100.0
+                ref_distance = np.load(self.ref_distance_path) / SCALE
             except:
-                ref_distance = read_dpt(self.ref_distance_path) / 100.0
+                ref_distance = read_dpt(self.ref_distance_path) / SCALE
             ref_distance[ref_distance <= 0] = np.max(ref_distance)
             ref_distance = torch.from_numpy(ref_distance.astype(np.float32)).cuda()
         else:
@@ -80,9 +82,9 @@ class Dataset:
         if os.path.exists(self.ref_distance_path) and\
            os.path.exists(self.ref_normal_path):
             try:
-                ref_distance = np.load(self.ref_distance_path) / 100.0
+                ref_distance = np.load(self.ref_distance_path) / SCALE
             except:
-                ref_distance = read_dpt(self.ref_distance_path) / 100.0
+                ref_distance = read_dpt(self.ref_distance_path) / SCALE
 
             ref_distance = torch.from_numpy(ref_distance.astype(np.float32)).cuda()
             ref_normal = np.load(self.ref_normal_path)
