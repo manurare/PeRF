@@ -141,7 +141,7 @@ class WildDataset(Dataset):
     def __init__(self, conf):
         super().__init__()
         self.image_path = conf.image_path
-        if conf.depth_path is not None:
+        if getattr(conf, "depth_path", None) is not None:
             self.ref_distance_path = conf.depth_path
         else:
             self.ref_distance_path = '.'.join(self.image_path.split('.')[:-1]) + '_ref_distance.npy'
@@ -158,7 +158,7 @@ class WildDataset(Dataset):
         else:
             self.height, self.width, _ = self.image.shape
 
-        if conf.depth_path is None:
+        if getattr(conf, "depth_path", None) is None:
             self.ref_distance, self.ref_normal = self.get_joint_distance_normal()
 
             self.normalization()
