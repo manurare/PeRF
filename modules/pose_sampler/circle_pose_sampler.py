@@ -137,7 +137,9 @@ class LemniscatePoseSampler(PoseSampler):
         z = a * 0.2 * np.cos(4*theta)
         Cs = np.stack((x, y, z)).T / 20.0
 
-        self.anchor_pts = torch.from_numpy(Cs[::5])
+        # 7.5 is the ratio between test Poses and training poses in the original paper. 180/24
+        indices = np.linspace(0, Cs.shape[0], int(Cs.shape[0] / 7.5), endpoint=False).astype(int)
+        self.anchor_pts = torch.from_numpy(Cs[indices])
         self.n_anchors = self.anchor_pts.shape[0]
 
     @torch.no_grad()
