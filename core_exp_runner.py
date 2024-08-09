@@ -228,8 +228,11 @@ class CoreRunner:
         os.makedirs(out_dir, exist_ok=True)
 
         color_frames = []
+        render_times = []
         for i in tqdm(range(dense_pose_sampler.n_poses)):
             pose = dense_pose_sampler.sample_pose(i)
+            import time
+            begin = time.time()
             if cam_type == 'pano':
                 pose[:3, :3] = torch.eye(3)
                 rays = gen_pano_rays(pose, 512, 1024)
@@ -238,6 +241,8 @@ class CoreRunner:
 
             with torch.no_grad():
                 render_result = self.scene.render(rays, query_keys=['rgb', 'distance'])
+            
+            render_times.append(time.time() - begin)
             colors = render_result['rgb']
             distances = render_result['distance']
 
@@ -247,6 +252,7 @@ class CoreRunner:
             np.save(pjoin(out_dir, 'distance_{}.npy'.format(i)), distances.cpu().numpy()*SCALE)
         
         write_video(pjoin(out_dir, 'video.mp4'), color_frames, fps=30)
+        print(f"Render times = {np.mean(render_times)}")
 
     def save_checkpoint(self):
         checkpoint = {
