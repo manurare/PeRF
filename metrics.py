@@ -23,8 +23,8 @@ lpips_alex.to("cuda")
 files = glob.glob(os.path.join(args.exp_renders_dir, "image_*.png"))
 numfiles = len(files)
 
-pred_rgb_files_format = os.path.join(args.exp_renders_dir, "image_{}.png")
-pred_depth_files_format = os.path.join(args.exp_renders_dir, "distance_{}.npy")
+pred_rgb_files_format = os.path.join(args.exp_renders_dir, "{:04}_rgb.png")
+pred_depth_files_format = os.path.join(args.exp_renders_dir, "{:04}_depth.npy")
 gt_rgb_files_format = os.path.join(args.gt_renders_dir, "{:05}_rgb.png")
 gt_depth_files_format = os.path.join(args.gt_renders_dir, "{:05}_depth.dpt")
 
