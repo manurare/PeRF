@@ -247,9 +247,9 @@ class CoreRunner:
             distances = render_result['distance']
 
             color_frames.append((colors.clip(0., 1.) * 255.).cpu().numpy().astype(np.uint8))
-            write_image(pjoin(out_dir, 'image_{}.png'.format(i)), colors * 255.)
-            write_image(pjoin(out_dir, 'distance_{}.png'.format(i)), colorize_single_channel_image(1. / distances))
-            np.save(pjoin(out_dir, 'distance_{}.npy'.format(i)), distances.cpu().numpy()*SCALE)
+            write_image(pjoin(out_dir, f'{i:04}_rgb.png'.format(i)), colors * 255.)
+            write_image(pjoin(out_dir, '{i:04}_depth_vis.png'.format(i)), colorize_single_channel_image(1. / distances))
+            np.save(pjoin(out_dir, '{i:04}_depth.npy'.format(i)), distances.cpu().numpy()*SCALE)
         
         write_video(pjoin(out_dir, 'video.mp4'), color_frames, fps=30)
         print(f"Render times = {np.mean(render_times)}")
